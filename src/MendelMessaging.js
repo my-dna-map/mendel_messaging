@@ -24,7 +24,6 @@ class MendelMessaging {
     this.config = config.aws;
     AWS.config.update(this.config.auth.credentials);
     this.sqs = new AWS.SQS();
-
   }
 
   /**

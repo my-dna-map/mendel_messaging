@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-aws-sdk@^2.443.0:
+aws-sdk@^2.443.0, aws-sdk@^2.528.0:
   version "2.528.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.528.0.tgz#9836e619607068171844ad27ccfe0082b6a118e9"
   integrity sha512-WBgavPqKHvYcIhD7LhmLLYOKtG/SUdNY6hMB0N/Jxaolzx4sOa7xegiZ8sdkAUq/vUEs1frnBF9hNmeIszUWCg==
