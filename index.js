@@ -53,7 +53,7 @@ class MendelMessaging {
    * @param queue
    * @returns {Promise<void>}
    */
-  async subscribeToQueue(f, queue) {
+  async subscribeToQueue(queue,f) {
     const app = Consumer.create({
       queueUrl: queue,
       handleMessage: async (message) => {
