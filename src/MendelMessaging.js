@@ -44,8 +44,8 @@ class MendelMessaging {
   }
 
   /**
-   * Subscribe to an espscific queue
-   * @param callback callback funciotn
+   * Subscribe to an specific queue
+   * @param callback callback function
    * @param queue queue to subscribe
    * @returns {Promise<void>}
    */
