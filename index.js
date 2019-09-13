@@ -36,8 +36,8 @@ class MendelMessaging {
    * @param msg
    * @returns {Promise<void>}
    */
-  async postMessage(msg) {
-    msg.event = "add_file";
+  async emit(event, msg) {
+    msg.event = event;
     msg.source = this.source;
 
     let params = {
@@ -45,6 +45,7 @@ class MendelMessaging {
       QueueUrl: this.config.QueueUrl
     };
     let r = await this.sqs.sendMessage(params).promise();
+    return r;
   }
 
   /**
@@ -53,7 +54,7 @@ class MendelMessaging {
    * @param queue
    * @returns {Promise<void>}
    */
-  async subscribeToQueue(queue,f) {
+  async subscribeToQueue(queue, f) {
     const app = Consumer.create({
       queueUrl: queue,
       handleMessage: async (message) => {
