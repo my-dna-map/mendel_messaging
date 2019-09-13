@@ -52,6 +52,7 @@ class MendelMessaging {
   async subscribeToQueue(queue, callback) {
     const app = Consumer.create({
       queueUrl: queue,
+      sqs: this.sqs,
       handleMessage: async (message) => {
         try {
           callback(JSON.parse(message.Body));
