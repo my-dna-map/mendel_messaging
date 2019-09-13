@@ -9,7 +9,8 @@ if (!process.env.NODE_CONFIG_DIR) {
 }
 
 /**
- *
+ * Base class for all queue messaging.
+ * TODO: to be re implemented.
  *
  */
 class MendelMessaging {
@@ -32,8 +33,8 @@ class MendelMessaging {
   }
 
   /**
-   *
-   * @param msg
+   * Put an message into the message queue
+   * @param msg message to be posted on queue (message will be altered with tow new fields. event and source)
    * @returns {Promise<void>}
    */
   async emit(event, msg) {
@@ -49,17 +50,17 @@ class MendelMessaging {
   }
 
   /**
-   *
-   * @param f
-   * @param queue
+   * Subscribe to an espscific queue
+   * @param callback callback funciotn
+   * @param queue queue to subscribe
    * @returns {Promise<void>}
    */
-  async subscribeToQueue(queue, f) {
+  async subscribeToQueue(queue, callback) {
     const app = Consumer.create({
       queueUrl: queue,
       handleMessage: async (message) => {
         try {
-          f(JSON.parse(message.Body));
+          callback(JSON.parse(message.Body));
         } catch (ex) {
           if (logger) {
             logger.error(ex.message);
@@ -83,9 +84,6 @@ class MendelMessaging {
 
     app.start();
   }
-
-
 }
-
 
 module.exports = MendelMessaging;
