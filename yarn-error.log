@@ -1,0 +1,42 @@
+Arguments: 
+  /usr/bin/node /usr/local/bin/yarn install
+
+PATH: 
+  /home/marior/Documents/sources/mydnacloud/mendel_messaging/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+
+Yarn version: 
+  1.17.3
+
+Node version: 
+  12.10.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  SyntaxError: /home/marior/Documents/sources/mydnacloud/mendel_messaging/package.json: Unexpected token , in JSON at position 318
+      at JSON.parse (<anonymous>)
+      at /usr/local/lib/node_modules/yarn/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/local/lib/node_modules/yarn/lib/cli.js:304:30)
+      at /usr/local/lib/node_modules/yarn/lib/cli.js:315:13
+
+npm manifest: 
+  {
+    "name": "mendel_messaging",
+    "version": "1.0.0",
+    "description": "Library to expose all Messaging functionalities",
+    "main": "index.js",
+    "repository": "https://github.com/my-dna-map/mendel_messaging.git",
+    "author": "Mario Rodriguez Mier",
+    "license": "MIT",
+    "dependencies": {
+      "config": "^3.0.1"
+    }
+  },
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

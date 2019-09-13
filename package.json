@@ -1,0 +1,12 @@
+{
+  "name": "mendel_messaging",
+  "version": "1.0.0",
+  "description": "Library to expose all Messaging functionalities",
+  "main": "index.js",
+  "repository": "https://github.com/my-dna-map/mendel_messaging.git",
+  "author": "Mario Rodriguez Mier",
+  "license": "MIT",
+  "dependencies": {
+    "config": "^3.0.1"
+  }
+}
