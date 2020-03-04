@@ -46,6 +46,27 @@ class MendelMessaging {
     return r;
   }
 
+
+  /**
+   * Put an message into the message queue
+   * @param msg message to be posted on queue (message will be altered with tow new fields. event and source)
+   * @returns {Promise<void>}
+   */
+  async emitDelayed(event, msg,seconds) {
+    msg.event = event;
+    msg.source = this.source;
+
+    let params = {
+      MessageBody: JSON.stringify(msg),
+      MessageGroupId:uuid.v4(),
+      MessageDeduplicationId:uuid.v4(),
+      DelaySeconds:seconds,
+      QueueUrl: this.config.QueueUrl
+    };
+    let r = await this.sqs.sendMessage(params).promise();
+    return r;
+  }
+
   /**
    * Subscribe to an specific queue
    * @param callback callback function
