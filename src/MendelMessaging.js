@@ -2,6 +2,7 @@
 
 const AWS = require("aws-sdk");
 const {Consumer} = require('sqs-consumer');
+const uuid = require('uuid');
 
 /**
  * Base class for all queue messaging.
@@ -37,6 +38,8 @@ class MendelMessaging {
 
     let params = {
       MessageBody: JSON.stringify(msg),
+      MessageGroupId:uuid.v4(),
+      MessageDeduplicationId:uuid.v4(),
       QueueUrl: this.config.QueueUrl
     };
     let r = await this.sqs.sendMessage(params).promise();
