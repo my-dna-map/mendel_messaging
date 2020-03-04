@@ -63,6 +63,7 @@ class MendelMessaging {
       DelaySeconds:seconds,
       QueueUrl: this.config.QueueUrl
     };
+
     let r = await this.sqs.sendMessage(params).promise();
     return r;
   }
