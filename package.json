@@ -7,6 +7,7 @@
   "author": "Mario Rodriguez Mier",
   "license": "MIT",
   "dependencies": {
+    "amqplib": "^0.5.5",
     "aws-sdk": "^2.528.0",
     "config": "^3.0.1",
     "sqs-consumer": "^5.4.0"
