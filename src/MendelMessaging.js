@@ -17,7 +17,7 @@ class MendelMessaging {
   source = null;
   consume_connection = null;
   consume_channel = null;
-  MQserver = "mq.mydnamap.com";
+  MQServer = "mq.mydnamap.com";
   queueName = 'HPC';
 
 
@@ -30,7 +30,7 @@ class MendelMessaging {
     this.source = source;
     this.config = config ? config : require("config");
     this.config = this.config.mq;
-    this.MQserver = this.config.MQServer;
+    this.MQServer = this.config.MQServer;
     this.queueName = this.config.queueName;
   }
 
@@ -65,7 +65,7 @@ class MendelMessaging {
         .then( (conn) => {
           this.consume_connection = conn;
 
-          console.log(` ******   Connected to MQ ${MQserver} **********`);
+          console.log(` ******   Connected to MQ ${this.MQServer} **********`);
           conn.on('error', (err) => {
             console.log("ERROR: %s", err);
             conn.close();
