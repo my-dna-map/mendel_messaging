@@ -7,3 +7,5 @@ queue.subscribeToQueue(config.mq.queueName,(message)=>{
 
   console.log(message);
 });
+
+queue.emit('test', {me:'hola'});

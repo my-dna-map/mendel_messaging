@@ -6,7 +6,6 @@ const uuid = require('uuid');
 const amqp = require('amqplib');
 
 
-
 /**
  * Base class for all queue messaging.
  * TODO: to be re implemented.
@@ -39,18 +38,25 @@ class MendelMessaging {
    * @param msg message to be posted on queue (message will be altered with tow new fields. event and source)
    * @returns {Promise<void>}
    */
-  async emit(event, msg) {
-    msg.event = event;
-    msg.source = this.source;
+  emit(event, msg) {
+    return new Promise((resolve, reject) => {
+      msg.event = event;
+      msg.source = this.source;
+      msg.Id = uuid.v4();
 
-    let params = {
-      MessageBody: JSON.stringify(msg),
-      MessageGroupId:uuid.v4(),
-      MessageDeduplicationId:uuid.v4(),
-      QueueUrl: this.config.QueueUrl
-    };
-    let r = await this.sqs.sendMessage(params).promise();
-    return r;
+      let open = amqp.connect(this.MQServer);
+
+      open.then((conn) => {
+        return conn.createChannel();
+      })
+          .then((ch) => {
+            return ch.assertQueue(this.queueName)
+                .then((ok) => {
+                  resolve(ch.sendToQueue(this.queueName, Buffer.from(JSON.stringify(msg))));
+                });
+          })
+          .catch(e => reject(e));
+    });
   }
 
   /**
@@ -62,7 +68,7 @@ class MendelMessaging {
   async subscribeToQueue(queueName, callback) {
 
     amqp.connect(this.MQServer)
-        .then( (conn) => {
+        .then((conn) => {
           this.consume_connection = conn;
 
           console.log(` ******   Connected to MQ ${this.MQServer} **********`);
@@ -88,15 +94,15 @@ class MendelMessaging {
                     .then(() => {
                       return ch.assertQueue(queueName, {exclusive: false});
                     })
-                    .then( (qok) => {
+                    .then((qok) => {
                       return ch.bindQueue(qok.queue, queueName, '')
                           .then(function () {
                             return qok.queue;
                           });
                     })
-                    .then( (queue) => {
+                    .then((queue) => {
                       ch.prefetch(1);
-                      ch.consume(queue, (msg) =>  {
+                      ch.consume(queue, (msg) => {
                         try {
                           //self.messageReceived(JSON.parse(msg.content.toString()));
                           callback(JSON.parse(msg.content.toString()));
