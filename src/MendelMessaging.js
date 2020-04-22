@@ -102,10 +102,10 @@ class MendelMessaging {
                     })
                     .then((queue) => {
                       ch.prefetch(1);
-                      ch.consume(queue, (msg) => {
+                      ch.consume(queue, async (msg) => {
                         try {
                           //self.messageReceived(JSON.parse(msg.content.toString()));
-                          callback(JSON.parse(msg.content.toString()));
+                          await callback(JSON.parse(msg.content.toString()));
                           ch.ack(msg);
                         } catch (ex) {
                           console.error(ex);
