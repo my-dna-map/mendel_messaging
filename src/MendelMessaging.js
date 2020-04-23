@@ -127,11 +127,12 @@ class MendelMessaging {
 
             if (msg) {
               try {
+                ch.ack(msg);
                 callback(JSON.parse(msg.content.toString())).then(() => {
-                  ch.ack(msg);
                   this.readMessageFromQueue(ch, queue, callback);
                 }).catch(e => {
-                  ch.nack(msg, false, true);
+                  //ch.nack(msg, false, true);
+                  // Poner el mesaje nuevamente en la cola?
                   setTimeout(() => {
                     this.readMessageFromQueue(ch, queue, callback)
                   }, 1000);
