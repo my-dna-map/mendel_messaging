@@ -117,6 +117,70 @@ class MendelMessaging {
               });
         });
   }
+
+  /**
+   *
+   * @param queueName
+   * @param callback
+   * @returns {Promise<void>}
+   */
+  async subscribeSingleMessageToQueue(queueName, callback) {
+
+    amqp.connect(this.MQServer)
+        .then((conn) => {
+          this.consume_connection = conn;
+
+          console.log(` ******   Connected to MQ ${this.MQServer} **********`);
+          conn.on('error', (err) => {
+            console.log("ERROR: %s", err);
+            conn.close();
+            setTimeout(function () {
+              //self.consume();
+            }, 50000);
+          });
+
+          conn.on("closed", () => {
+            console.log("Connection Closed");
+            setTimeout(function () {
+              //self.consume();
+            }, 50000);
+          });
+
+          conn.createChannel()
+              .then((ch) => {
+                this.consume_channel = ch;
+                var ok = ch.assertExchange(queueName, 'topic', {durable: false})
+                    .then(() => {
+                      return ch.assertQueue(queueName, {exclusive: false});
+                    })
+                    .then((qok) => {
+                      return ch.bindQueue(qok.queue, queueName, '')
+                          .then(function () {
+                            return qok.queue;
+                          });
+                    })
+                    .then((queue) => {
+                      let readMessageFromQueue = function() {
+                        if (ch) {
+                          ch.get(q, data => {
+                            // data will be set to false if no messages are available on the queue.
+                            if (data) {
+                              try {
+                                callback(JSON.parse(data.content.toString())).then(() => {
+                                  ch.ack(msg);
+                                });
+                              } catch (ex) {
+                                console.error(ex);
+                              }
+                            }
+                          });
+                        }
+                    }
+                      setInterval(readMessageFromQueue, 1000);
+                    });
+              });
+        });
+  }
 }
 
 
