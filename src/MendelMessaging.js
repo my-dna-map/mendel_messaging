@@ -178,6 +178,9 @@ class MendelMessaging {
                             }
                           });
                         }
+                        else {
+                          setTimeout(readMessageFromQueue, 1000);
+                        }
                       }
                       readMessageFromQueue();
                     });
