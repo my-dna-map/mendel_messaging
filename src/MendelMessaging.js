@@ -18,6 +18,7 @@ class MendelMessaging {
   consume_channel = null;
   MQServer = "mq.mydnamap.com";
   queueName = 'HPC';
+  exectingCallBack = false;
 
 
   /**
@@ -124,20 +125,31 @@ class MendelMessaging {
       ch.get(queue)
           .then(msg => {
             // msg will be set to false if no messages are available on the queue.
-
             if (msg) {
               try {
-                ch.ack(msg);
-                callback(JSON.parse(msg.content.toString())).then(() => {
-                  this.readMessageFromQueue(ch, queue, callback);
-                }).catch(e => {
-                  //ch.nack(msg, false, true);
-                  // Poner el mesaje nuevamente en la cola?
+
+                if (!this.exectingCallBack) {
+                  ch.ack(msg);
+                  this.exectingCallBack = true;
+                  callback(JSON.parse(msg.content.toString())).then(() => {
+                    this.exectingCallBack = false;
+                    this.readMessageFromQueue(ch, queue, callback);
+                  })
+                      .catch(e => {
+                        //ch.nack(msg, false, true);
+                        // Poner el mesaje nuevamente en la cola?
+                        this.exectingCallBack = false;
+                        setTimeout(() => {
+                          this.readMessageFromQueue(ch, queue, callback)
+                        }, 1000);
+                        logger.error(e);
+                      })
+                } else {
+                  ch.nack(msg, false, true);
                   setTimeout(() => {
                     this.readMessageFromQueue(ch, queue, callback)
-                  }, 1000);
-                  logger.error(e);
-                })
+                  });
+                }
               } catch (ex) {
                 ch.nack(msg, false, true);
                 setTimeout(() => {
@@ -151,7 +163,10 @@ class MendelMessaging {
               }, 1000);
             }
 
-          });
+          })
+          .catch(err => {
+            logger.error(err);
+          })
 
     } else {
       setTimeout(() => {
@@ -173,20 +188,6 @@ class MendelMessaging {
           this.consume_connection = conn;
 
           console.log(` ******   Connected to MQ ${this.MQServer} **********`);
-          conn.on('error', (err) => {
-            console.log("ERROR: %s", err);
-            conn.close();
-            setTimeout(function () {
-              //self.consume();
-            }, 50000);
-          });
-          conn.on("closed", () => {
-            console.log("Connection Closed");
-            setTimeout(function () {
-              //self.consume();
-            }, 50000);
-          });
-
           conn.createChannel()
               .then((ch) => {
                 this.consume_channel = ch;
