@@ -118,6 +118,39 @@ class MendelMessaging {
         });
   }
 
+
+  readMessageFromQueue  (ch,queue,callback) {
+    if (ch) {
+      ch.get(queue)
+          .then(msg => {
+            // msg will be set to false if no messages are available on the queue.
+
+            if (msg) {
+              try {
+                callback(JSON.parse(msg.content.toString())).then(() => {
+                  ch.ack(msg);
+                  this.readMessageFromQueue(ch,queue,callback);
+                }).catch(e => {
+                  ch.nack(msg, false, true);
+                  setTimeout(this.readMessageFromQueue, 1000,ch,queue,callback);
+                  logger.error(ex);
+                })
+              } catch (ex) {
+                ch.nack(msg, false, true);
+                setTimeout(this.readMessageFromQueue, 1000,ch,queue,callback);
+                logger.error(ex);
+              }
+            }
+            else {
+              setTimeout(this.readMessageFromQueue, 1000,ch,queue,callback);
+            }
+
+          });
+
+    } else {
+      setTimeout(this.readMessageFromQueue, 1000,ch,queue,callback);
+    }
+  }
   /**
    *
    * @param queueName
@@ -148,7 +181,7 @@ class MendelMessaging {
           conn.createChannel()
               .then((ch) => {
                 this.consume_channel = ch;
-                var ok = ch.assertExchange(queueName, 'topic', {durable: false})
+                let ok = ch.assertExchange(queueName, 'topic', {durable: false})
                     .then(() => {
                       return ch.assertQueue(queueName, {exclusive: false});
                     })
@@ -159,38 +192,8 @@ class MendelMessaging {
                           });
                     })
                     .then((queue) => {
-                      let readMessageFromQueue = function () {
-                        if (ch) {
-                          ch.get(queue)
-                              .then(msg => {
-                                // msg will be set to false if no messages are available on the queue.
-                                console.log(msg);
-                                if (msg) {
-                                  try {
-                                    callback(JSON.parse(msg.content.toString())).then(() => {
-                                      ch.ack(msg);
-                                      readMessageFromQueue();
-                                    }).catch(e => {
-                                      ch.nack(msg, false, true);
-                                      setTimeout(readMessageFromQueue, 1000);
-                                      logger.error(ex);
-                                    })
-                                  } catch (ex) {
-                                    ch.nack(msg, false, true);
-                                    setTimeout(readMessageFromQueue, 1000);
-                                    logger.error(ex);
-                                  }
-                                }
-                              })
-                              .catch(e => {
-                                console.log(e);
-                                setTimeout(readMessageFromQueue, 1000);
-                              })
-                        } else {
-                          setTimeout(readMessageFromQueue, 1000);
-                        }
-                      }
-                      readMessageFromQueue();
+
+                      this.readMessageFromQueue(ch,queue,callback);
                     });
               });
         });
