@@ -160,23 +160,25 @@ class MendelMessaging {
                           });
                     })
                     .then((queue) => {
-                      let readMessageFromQueue = function() {
+                      let readMessageFromQueue = function () {
                         if (ch) {
-                          ch.get(q, data => {
-                            // data will be set to false if no messages are available on the queue.
-                            if (data) {
+                          ch.get(queue).then(msg => {
+                            // msg will be set to false if no messages are available on the queue.
+                            if (msg) {
                               try {
-                                callback(JSON.parse(data.content.toString())).then(() => {
+                                callback(JSON.parse(msg.content.toString())).then(() => {
                                   ch.ack(msg);
+                                  setTimeout(readMessageFromQueue, 1000);
                                 });
                               } catch (ex) {
-                                console.error(ex);
+                                logger.error(ex);
+                                setTimeout(readMessageFromQueue, 1000);
                               }
                             }
                           });
                         }
-                    }
-                      setInterval(readMessageFromQueue, 1000);
+                      }
+                      readMessageFromQueue();
                     });
               });
         });
