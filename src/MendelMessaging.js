@@ -135,7 +135,7 @@ class MendelMessaging {
                   setTimeout(() => {
                     this.readMessageFromQueue(ch, queue, callback)
                   }, 1000);
-                  logger.error(ex);
+                  logger.error(e);
                 })
               } catch (ex) {
                 ch.nack(msg, false, true);
