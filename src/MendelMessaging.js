@@ -171,7 +171,7 @@ class MendelMessaging {
                                   readMessageFromQueue();
                                 });
                               } catch (ex) {
-                                ch.reject(msg);
+                                ch.nack(msg,false,true);
                                 logger.error(ex);
                                 setTimeout(readMessageFromQueue, 1000);
                               }
