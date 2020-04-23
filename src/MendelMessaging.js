@@ -163,6 +163,7 @@ class MendelMessaging {
                         if (ch) {
                           ch.get(queue).then(msg => {
                             // msg will be set to false if no messages are available on the queue.
+                            console.log(msg);
                             if (msg) {
                               try {
                                 callback(JSON.parse(msg.content.toString())).then(() => {
