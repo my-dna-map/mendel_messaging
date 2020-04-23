@@ -124,7 +124,6 @@ class MendelMessaging {
       ch.get(queue)
           .then(msg => {
             // msg will be set to false if no messages are available on the queue.
-
             if (msg) {
               try {
                 callback(JSON.parse(msg.content.toString())).then(() => {
@@ -149,7 +148,6 @@ class MendelMessaging {
                 this.readMessageFromQueue(ch, queue, callback)
               }, 1000);
             }
-
           });
 
     } else {
