@@ -138,7 +138,6 @@ class MendelMessaging {
               //self.consume();
             }, 50000);
           });
-
           conn.on("closed", () => {
             console.log("Connection Closed");
             setTimeout(function () {
