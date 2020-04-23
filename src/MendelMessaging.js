@@ -161,24 +161,32 @@ class MendelMessaging {
                     .then((queue) => {
                       let readMessageFromQueue = function () {
                         if (ch) {
-                          ch.get(queue).then(msg => {
-                            // msg will be set to false if no messages are available on the queue.
-                            console.log(msg);
-                            if (msg) {
-                              try {
-                                callback(JSON.parse(msg.content.toString())).then(() => {
-                                  ch.ack(msg);
-                                  readMessageFromQueue();
-                                });
-                              } catch (ex) {
-                                ch.nack(msg,false,true);
+                          ch.get(queue)
+                              .then(msg => {
+                                // msg will be set to false if no messages are available on the queue.
+                                console.log(msg);
+                                if (msg) {
+                                  try {
+                                    callback(JSON.parse(msg.content.toString())).then(() => {
+                                      ch.ack(msg);
+                                      readMessageFromQueue();
+                                    }).catch(e => {
+                                      ch.nack(msg, false, true);
+                                      setTimeout(readMessageFromQueue, 1000);
+                                      logger.error(ex);
+                                    })
+                                  } catch (ex) {
+                                    ch.nack(msg, false, true);
+                                    setTimeout(readMessageFromQueue, 1000);
+                                    logger.error(ex);
+                                  }
+                                }
+                              })
+                              .catch(e => {
+                                console.log(e);
                                 setTimeout(readMessageFromQueue, 1000);
-                                logger.error(ex);
-                              }
-                            }
-                          });
-                        }
-                        else {
+                              })
+                        } else {
                           setTimeout(readMessageFromQueue, 1000);
                         }
                       }
