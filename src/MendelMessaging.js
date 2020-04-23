@@ -119,7 +119,7 @@ class MendelMessaging {
   }
 
 
-  readMessageFromQueue  (ch,queue,callback) {
+  readMessageFromQueue(ch, queue, callback) {
     if (ch) {
       ch.get(queue)
           .then(msg => {
@@ -129,28 +129,36 @@ class MendelMessaging {
               try {
                 callback(JSON.parse(msg.content.toString())).then(() => {
                   ch.ack(msg);
-                  this.readMessageFromQueue(ch,queue,callback);
+                  this.readMessageFromQueue(ch, queue, callback);
                 }).catch(e => {
                   ch.nack(msg, false, true);
-                  setTimeout(this.readMessageFromQueue, 1000,ch,queue,callback);
+                  setTimeout(() => {
+                    this.readMessageFromQueue(ch, queue, callback)
+                  }, 1000);
                   logger.error(ex);
                 })
               } catch (ex) {
                 ch.nack(msg, false, true);
-                setTimeout(this.readMessageFromQueue, 1000,ch,queue,callback);
+                setTimeout(() => {
+                  this.readMessageFromQueue(ch, queue, callback)
+                }, 1000);
                 logger.error(ex);
               }
-            }
-            else {
-              setTimeout(this.readMessageFromQueue, 1000,ch,queue,callback);
+            } else {
+              setTimeout(() => {
+                this.readMessageFromQueue(ch, queue, callback)
+              }, 1000);
             }
 
           });
 
     } else {
-      setTimeout(this.readMessageFromQueue, 1000,ch,queue,callback);
+      setTimeout(() => {
+        this.readMessageFromQueue(ch, queue, callback)
+      }, 1000);
     }
   }
+
   /**
    *
    * @param queueName
@@ -193,7 +201,7 @@ class MendelMessaging {
                     })
                     .then((queue) => {
 
-                      this.readMessageFromQueue(ch,queue,callback);
+                      this.readMessageFromQueue(ch, queue, callback);
                     });
               });
         });
