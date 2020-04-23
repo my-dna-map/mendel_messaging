@@ -168,7 +168,7 @@ class MendelMessaging {
                               try {
                                 callback(JSON.parse(msg.content.toString())).then(() => {
                                   ch.ack(msg);
-                                  setTimeout(readMessageFromQueue, 1000);
+                                  readMessageFromQueue();
                                 });
                               } catch (ex) {
                                 logger.error(ex);
