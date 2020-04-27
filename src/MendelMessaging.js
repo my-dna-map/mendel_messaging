@@ -169,7 +169,7 @@ class MendelMessaging {
         .then((conn) => {
           this.consume_connection = conn;
 
-          console.log(` ******   Connected to MQ ${this.MQServer} **********`);
+          logger.info(` ******   Connected to MQ ${this.MQServer} **********`);
           conn.on('error', (err) => {
             console.log("ERROR: %s", err);
             conn.close();
