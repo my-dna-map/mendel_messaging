@@ -25,12 +25,16 @@ class MendelMessaging {
    * @param source
    * @param config
    */
-  constructor(source, config) {
+  constructor(source, config, queueName = null) {
     this.source = source;
     this.config = config ? config : require("config");
     this.config = this.config.mq;
     this.MQServer = this.config.MQServer;
-    this.queueName = this.config.queueName;
+    if (!queueName) {
+      this.queueName = this.config.queueName;
+    } else {
+      this.queueName = queueName
+    }
   }
 
   /**
