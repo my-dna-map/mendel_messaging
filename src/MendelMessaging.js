@@ -167,12 +167,11 @@ class MendelMessaging {
    * @param callback
    * @returns {Promise<void>}
    */
-  async subscribeSingleMessageToQueue(queueName, callback) {
+  async subscribeSingleMessageToQueue(queueName, callback, errfn) {
 
     amqp.connect(this.MQServer)
         .then((conn) => {
           this.consume_connection = conn;
-
           logger.info(` ******   Connected to MQ ${this.MQServer} **********`);
           conn.on('error', (err) => {
             console.log("ERROR: %s", err);
@@ -206,7 +205,13 @@ class MendelMessaging {
                       this.readMessageFromQueue(ch, queue, callback);
                     });
               });
-        });
+        })
+        .catch(ex => {
+          if (errfn) {
+            errfn(ex);
+          }
+        })
+
   }
 }
 
