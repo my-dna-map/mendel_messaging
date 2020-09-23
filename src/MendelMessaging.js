@@ -37,6 +37,7 @@ class MendelMessaging {
         }
     }
 
+
     /**
      * Put an message into the message queue
      * @param msg message to be posted on queue (message will be altered with tow new fields. event and source)
