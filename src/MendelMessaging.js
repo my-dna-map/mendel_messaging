@@ -93,7 +93,7 @@ class MendelMessaging {
      * @param queue queue to subscribe
      * @returns {Promise<void>}
      */
-    async subscribeToQueue(queueName, callback, queueType = 'topic') {
+    async subscribeToQueue(queueName, callback, ) {
 
         amqp.connect(this.MQServer)
             .then((conn) => {
@@ -120,7 +120,7 @@ class MendelMessaging {
                         this.consume_channel = ch;
                         var ok = ch.assertExchange(queueName, queueType, {durable: false})
                             .then(() => {
-                                return ch.assertQueue(queueType == 'topic' ? queueName : '', {exclusive: queueType == 'topic' ? false : true});
+                                return ch.assertQueue('fanout' , {exclusive:  true});
                             })
                             .then((qok) => {
                                 return ch.bindQueue(qok.queue, queueName , '')
@@ -133,7 +133,6 @@ class MendelMessaging {
                                 ch.qos(1);
                                 ch.consume(queue, (msg) => {
                                     try {
-
                                         callback(JSON.parse(msg.content.toString())).then(() => {
                                             ch.ack(msg);
                                         });
@@ -214,7 +213,7 @@ class MendelMessaging {
                 conn.createChannel()
                     .then((ch) => {
                         this.consume_channel = ch;
-                        let ok = ch.assertExchange(queueName, 'topic', {durable: false})
+                        let ok = ch.assertExchange(queueName, 'fanout', {durable: false})
                             .then(() => {
                                 return ch.assertQueue(queueName, {exclusive: false});
                             })
