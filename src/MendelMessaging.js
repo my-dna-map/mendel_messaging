@@ -65,14 +65,38 @@ class MendelMessaging {
         });
     }
 
+    emitEx(event, msg) {
+        return new Promise((resolve, reject) => {
+            msg.event = event;
+            msg.source = this.source;
+            msg.Id = uuid.v4();
+            let queueName = msg.queue ? msg.queue : this.queueName;
+
+            let open = amqp.connect(this.MQServer);
+
+            open.then((conn) => {
+                return conn.createChannel();
+            })
+                .then((ch) => {
+                    return ch.assertExchange(this.queueName, 'fanout', {durable: false})
+                        .then((ok) => {
+                            resolve(ch.publish(this.queueName, '', Buffer.from(JSON.stringify(msg))));
+                        });
+                })
+                .catch(e => reject(e));
+        });
+    }
+
     /**
      * Subscribe to an specific queue
      * @param callback callback function
      * @param queue queue to subscribe
      * @returns {Promise<void>}
      */
-    async subscribeToQueue(queueName, callback,queueType='topic') {
-
+    async subscribeToQueue(queueName, callback, queueType = 'topic') {
+        if (queueType != 'topic') {
+            queueName = '';
+        }
         amqp.connect(this.MQServer)
             .then((conn) => {
                 this.consume_connection = conn;
