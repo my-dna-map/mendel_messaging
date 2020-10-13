@@ -122,7 +122,7 @@ class MendelMessaging {
                         this.consume_channel = ch;
                         var ok = ch.assertExchange(queueName, queueType, {durable: false})
                             .then(() => {
-                                return ch.assertQueue(queueName, {exclusive: false});
+                                return ch.assertQueue(queueType != 'topic' ? queueName : '', {exclusive: false});
                             })
                             .then((qok) => {
                                 return ch.bindQueue(qok.queue, queueName, '')
