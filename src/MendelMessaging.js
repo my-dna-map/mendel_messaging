@@ -94,9 +94,7 @@ class MendelMessaging {
      * @returns {Promise<void>}
      */
     async subscribeToQueue(queueName, callback, queueType = 'topic') {
-        if (queueType != 'topic') {
-            queueName = '';
-        }
+
         amqp.connect(this.MQServer)
             .then((conn) => {
                 this.consume_connection = conn;
