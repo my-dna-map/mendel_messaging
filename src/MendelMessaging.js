@@ -119,9 +119,67 @@ class MendelMessaging {
                 conn.createChannel()
                     .then((ch) => {
                         this.consume_channel = ch;
-                        var ok = ch.assertExchange(queueName, queueType, {durable: false})
+                        var ok = ch.assertExchange(queueName, 'fanout', {durable: false})
                             .then(() => {
-                                return ch.assertQueue('fanout' , {exclusive:  true});
+                                return ch.assertQueue(queueName , {exclusive:  false});
+                            })
+                            .then((qok) => {
+                                return ch.bindQueue(qok.queue, queueName , '')
+                                    .then(function () {
+                                        return qok.queue;
+                                    });
+                            })
+                            .then((queue) => {
+                                ch.prefetch(1);
+                                ch.qos(1);
+                                ch.consume(queue, (msg) => {
+                                    try {
+                                        callback(JSON.parse(msg.content.toString())).then(() => {
+                                            ch.ack(msg);
+                                        });
+                                    } catch (ex) {
+                                        console.error(ex);
+                                    }
+                                }, {noAck: false});
+                            });
+                    });
+            });
+    }
+
+    /**
+     * Subscribe to an specific queue
+     * @param callback callback function
+     * @param queue queue to subscribe
+     * @returns {Promise<void>}
+     */
+    async subscribeToOneToMany(queueName, callback, ) {
+
+        amqp.connect(this.MQServer)
+            .then((conn) => {
+                this.consume_connection = conn;
+
+                console.log(` ******   Connected to MQ ${this.MQServer} **********`);
+                conn.on('error', (err) => {
+                    console.log("ERROR: %s", err);
+                    conn.close();
+                    setTimeout(function () {
+                        //self.consume();
+                    }, 50000);
+                });
+
+                conn.on("closed", () => {
+                    console.log("Connection Closed");
+                    setTimeout(function () {
+                        //self.consume();
+                    }, 50000);
+                });
+
+                conn.createChannel()
+                    .then((ch) => {
+                        this.consume_channel = ch;
+                        var ok = ch.assertExchange(queueName, 'fanout', {durable: false})
+                            .then(() => {
+                                return ch.assertQueue('' , {exclusive:  true});
                             })
                             .then((qok) => {
                                 return ch.bindQueue(qok.queue, queueName , '')
