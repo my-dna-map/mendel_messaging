@@ -43,7 +43,7 @@ class MendelMessaging {
      * @param msg message to be posted on queue (message will be altered with tow new fields. event and source)
      * @returns {Promise<void>}
      */
-    emit(event, msg) {
+    emitOLD(event, msg) {
         return new Promise((resolve, reject) => {
             msg.event = event;
             msg.source = this.source;
@@ -65,7 +65,7 @@ class MendelMessaging {
         });
     }
 
-    emitEx(event, msg) {
+    emit(event, msg) {
         return new Promise((resolve, reject) => {
             msg.event = event;
             msg.source = this.source;
@@ -120,10 +120,10 @@ class MendelMessaging {
                         this.consume_channel = ch;
                         var ok = ch.assertExchange(queueName, queueType, {durable: false})
                             .then(() => {
-                                return ch.assertQueue(queueType != 'topic' ? queueName : '', {exclusive: false});
+                                return ch.assertQueue(queueType == 'topic' ? queueName : '', {exclusive: queueType == 'topic' ? false : true});
                             })
                             .then((qok) => {
-                                return ch.bindQueue(qok.queue, queueName, '')
+                                return ch.bindQueue(qok.queue, queueName , '')
                                     .then(function () {
                                         return qok.queue;
                                     });
@@ -133,7 +133,7 @@ class MendelMessaging {
                                 ch.qos(1);
                                 ch.consume(queue, (msg) => {
                                     try {
-                                        //self.messageReceived(JSON.parse(msg.content.toString()));
+
                                         callback(JSON.parse(msg.content.toString())).then(() => {
                                             ch.ack(msg);
                                         });
