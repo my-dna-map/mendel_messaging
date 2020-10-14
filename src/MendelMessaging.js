@@ -82,7 +82,6 @@ class MendelMessaging {
                         .then((ok) => {
                             ch.publish(this.queueName, '', Buffer.from(JSON.stringify(msg)))
                             ch.close();
-
                             resolve();
                         });
                 })
