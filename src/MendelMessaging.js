@@ -74,14 +74,16 @@ class MendelMessaging {
             let queueName = msg.queue ? msg.queue : this.queueName;
 
             let open = amqp.connect(this.MQServer);
-
             open.then((conn) => {
                 return conn.createChannel();
             })
                 .then((ch) => {
                     return ch.assertExchange(this.queueName, 'fanout', {durable: false})
                         .then((ok) => {
-                            resolve(ch.publish(this.queueName, '', Buffer.from(JSON.stringify(msg))));
+                            ch.publish(this.queueName, '', Buffer.from(JSON.stringify(msg)))
+                            ch.close();
+
+                            resolve();
                         });
                 })
                 .catch(e => reject(e));
@@ -94,7 +96,7 @@ class MendelMessaging {
      * @param queue queue to subscribe
      * @returns {Promise<void>}
      */
-    async subscribeToQueue(queueName, callback, ) {
+    async subscribeToQueue(queueName, callback,) {
 
         amqp.connect(this.MQServer)
             .then((conn) => {
@@ -121,10 +123,10 @@ class MendelMessaging {
                         this.consume_channel = ch;
                         var ok = ch.assertExchange(queueName, 'fanout', {durable: false})
                             .then(() => {
-                                return ch.assertQueue(queueName , {exclusive:  false});
+                                return ch.assertQueue(queueName, {exclusive: false});
                             })
                             .then((qok) => {
-                                return ch.bindQueue(qok.queue, queueName , '')
+                                return ch.bindQueue(qok.queue, queueName, '')
                                     .then(function () {
                                         return qok.queue;
                                     });
@@ -152,7 +154,7 @@ class MendelMessaging {
      * @param queue queue to subscribe
      * @returns {Promise<void>}
      */
-    async subscribeToOneToMany(queueName, callback, ) {
+    async subscribeToOneToMany(queueName, callback,) {
 
         amqp.connect(this.MQServer)
             .then((conn) => {
@@ -179,10 +181,10 @@ class MendelMessaging {
                         this.consume_channel = ch;
                         var ok = ch.assertExchange(queueName, 'fanout', {durable: false})
                             .then(() => {
-                                return ch.assertQueue('' , {exclusive:  true});
+                                return ch.assertQueue('', {exclusive: true});
                             })
                             .then((qok) => {
-                                return ch.bindQueue(qok.queue, queueName , '')
+                                return ch.bindQueue(qok.queue, queueName, '')
                                     .then(function () {
                                         return qok.queue;
                                     });
