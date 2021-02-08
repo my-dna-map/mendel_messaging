@@ -14,8 +14,6 @@ const amqp = require('amqplib');
 class MendelMessaging {
     config = null;
     source = null;
-    consume_connection = null;
-    consume_channel = null;
     MQServer = "mq.mydnamap.com";
     queueName = 'HPC';
 
@@ -98,8 +96,6 @@ class MendelMessaging {
 
         amqp.connect(this.MQServer)
             .then((conn) => {
-                this.consume_connection = conn;
-
                 console.log(` ******   Connected to MQ ${this.MQServer} **********`);
                 conn.on('error', (err) => {
                     console.log("ERROR: %s", err);
@@ -118,7 +114,6 @@ class MendelMessaging {
 
                 conn.createChannel()
                     .then((ch) => {
-
                         let ok = ch.assertExchange(queueName, 'fanout', {durable: false})
                             .then(() => {
                                 return ch.assertQueue(queueName, {exclusive: false});
@@ -156,7 +151,6 @@ class MendelMessaging {
 
         amqp.connect(this.MQServer)
             .then((conn) => {
-                this.consume_connection = conn;
 
                 console.log(` ******   Connected to MQ ${this.MQServer} **********`);
                 conn.on('error', (err) => {
@@ -253,7 +247,7 @@ class MendelMessaging {
 
         amqp.connect(this.MQServer)
             .then((conn) => {
-                this.consume_connection = conn;
+
                 logger.info(` ******   Connected to MQ ${this.MQServer} **********`);
                 conn.on('error', (err) => {
                     console.log("ERROR: %s", err);
