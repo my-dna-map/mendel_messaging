@@ -131,8 +131,8 @@ class MendelMessaging {
                                     });
                             })
                             .then((queue) => {
-                                ch.prefetch(1);
-                                ch.qos(1);
+                               // ch.prefetch(1);
+                                //ch.qos(1);
                                 ch.consume(queue, (msg) => {
                                     try {
                                         callback(JSON.parse(msg.content.toString())).then(() => {
@@ -189,8 +189,8 @@ class MendelMessaging {
                                     });
                             })
                             .then((queue) => {
-                                ch.prefetch(1);
-                                ch.qos(1);
+                                //ch.prefetch(1);
+                                //ch.qos(1);
                                 ch.consume(queue, (msg) => {
                                     try {
                                         callback(JSON.parse(msg.content.toString())).then(() => {
