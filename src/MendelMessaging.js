@@ -81,9 +81,9 @@ class MendelMessaging {
                 return conn.createChannel();
             })
                 .then((ch) => {
-                    return ch.assertExchange(this.queueName, 'fanout', {durable: false})
+                    return ch.assertExchange(queueName, 'fanout', {durable: false})
                         .then((ok) => {
-                            ch.publish(this.queueName, '', Buffer.from(JSON.stringify(msg)))
+                            ch.publish(queueName, '', Buffer.from(JSON.stringify(msg)))
                             ch.close();
                             resolve();
                         });
