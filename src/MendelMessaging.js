@@ -63,6 +63,12 @@ class MendelMessaging {
         });
     }
 
+    /**
+     *
+     * @param event
+     * @param msg
+     * @returns {Promise<unknown>}
+     */
     emit(event, msg) {
         return new Promise((resolve, reject) => {
             msg.event = event;
