@@ -119,8 +119,8 @@ class MendelMessaging {
 
                 conn.createChannel()
                     .then((ch) => {
-                        this.consume_channel = ch;
-                        var ok = ch.assertExchange(queueName, 'fanout', {durable: false})
+
+                        let ok = ch.assertExchange(queueName, 'fanout', {durable: false})
                             .then(() => {
                                 return ch.assertQueue(queueName, {exclusive: false});
                             })
@@ -177,8 +177,8 @@ class MendelMessaging {
 
                 conn.createChannel()
                     .then((ch) => {
-                        this.consume_channel = ch;
-                        var ok = ch.assertExchange(queueName, 'fanout', {durable: false})
+
+                        let ok = ch.assertExchange(queueName, 'fanout', {durable: false})
                             .then(() => {
                                 return ch.assertQueue('', {exclusive: true});
                             })
@@ -272,7 +272,7 @@ class MendelMessaging {
 
                 conn.createChannel()
                     .then((ch) => {
-                        this.consume_channel = ch;
+
                         let ok = ch.assertExchange(queueName, 'fanout', {durable: false})
                             .then(() => {
                                 return ch.assertQueue(queueName, {exclusive: false});
