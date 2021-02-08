@@ -65,7 +65,6 @@ class MendelMessaging {
         });
     }
 
-
     emit(event, msg) {
         return new Promise((resolve, reject) => {
             msg.event = event;
