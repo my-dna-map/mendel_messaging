@@ -153,6 +153,7 @@ class MendelMessaging {
      * @param queue queue to subscribe
      * @returns {Promise<void>}
      */
+
     async subscribeToOneToMany(queueName, callback,) {
 
         amqp.connect(this.MQServer)
