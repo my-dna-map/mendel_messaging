@@ -98,7 +98,7 @@ class MendelMessaging {
      * @param queue queue to subscribe
      * @returns {Promise<void>}
      */
-    async subscribeToQueue(queueName, callback,) {
+    async subscribeToQueue(queueName, callback) {
 
         amqp.connect(this.MQServer)
             .then((conn) => {
@@ -131,7 +131,7 @@ class MendelMessaging {
                                     });
                             })
                             .then((queue) => {
-                               // ch.prefetch(1);
+                                // ch.prefetch(1);
                                 //ch.qos(1);
                                 ch.consume(queue, (msg) => {
                                     try {
@@ -212,24 +212,18 @@ class MendelMessaging {
                 .then(msg => {
                     // msg will be set to false if no messages are available on the queue.
                     if (msg) {
-                        try {
-                            callback(JSON.parse(msg.content.toString())).then(() => {
-                                ch.ack(msg);
+                        callback(JSON.parse(msg.content.toString()))
+                            .then(() => {
                                 this.readMessageFromQueue(ch, queue, callback);
-                            }).catch(e => {
-                                ch.nack(msg, false, true);
+                            })
+                            .catch(e => {
                                 setTimeout(() => {
                                     this.readMessageFromQueue(ch, queue, callback)
                                 }, 1000);
                                 logger.error(ex);
                             })
-                        } catch (ex) {
-                            ch.nack(msg, false, true);
-                            setTimeout(() => {
-                                this.readMessageFromQueue(ch, queue, callback)
-                            }, 1000);
-                            logger.error(ex);
-                        }
+                        ch.ack(msg);
+
                     } else {
                         setTimeout(() => {
                             this.readMessageFromQueue(ch, queue, callback)
@@ -259,15 +253,15 @@ class MendelMessaging {
                 conn.on('error', (err) => {
                     console.log("ERROR: %s", err);
                     conn.close();
-                    setTimeout(function () {
+                    /*setTimeout(function () {
                         //self.consume();
-                    }, 50000);
+                    }, 50000);*/
                 });
                 conn.on("closed", () => {
                     console.log("Connection Closed");
-                    setTimeout(function () {
+                    /*setTimeout(function () {
                         //self.consume();
-                    }, 50000);
+                    }, 50000);*/
                 });
 
                 conn.createChannel()
@@ -279,7 +273,7 @@ class MendelMessaging {
                             })
                             .then((qok) => {
                                 return ch.bindQueue(qok.queue, queueName, '')
-                                    .then(function () {
+                                    .then(() => {
                                         return qok.queue;
                                     });
                             })
