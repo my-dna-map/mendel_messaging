@@ -33,6 +33,9 @@ class MendelMessaging {
         } else {
             this.queueName = queueName
         }
+        if (logger) {
+            logger.info(`Using queue ${this.queueName}`);
+        }
     }
 
 
@@ -88,7 +91,12 @@ class MendelMessaging {
                             resolve();
                         });
                 })
-                .catch(e => reject(e));
+                .catch(e =>  {
+                    if (logger) {
+                        logger.error(e);
+                    }
+                    reject(e)
+                });
         });
     }
 
@@ -102,9 +110,10 @@ class MendelMessaging {
 
         amqp.connect(this.MQServer)
             .then((conn) => {
-                console.log(` ******   Connected to MQ ${this.MQServer} **********`);
+
+                logger?.info(` ******   Connected to MQ ${this.MQServer} Queue ${queueName} **********`);
                 conn.on('error', (err) => {
-                    console.log("ERROR: %s", err);
+                    logger?.error("ERROR: %s", err);
                     conn.close();
                     setTimeout(function () {
                         //self.consume();
@@ -112,7 +121,7 @@ class MendelMessaging {
                 });
 
                 conn.on("closed", () => {
-                    console.log("Connection Closed");
+                    logger?.info ("Connection Closed")
                     setTimeout(function () {
                         //self.consume();
                     }, 50000);
@@ -139,7 +148,7 @@ class MendelMessaging {
                                             ch.ack(msg);
                                         });
                                     } catch (ex) {
-                                        console.error(ex);
+                                        logger?.error(ex);
                                     }
                                 }, {noAck: false});
                             });
@@ -159,9 +168,9 @@ class MendelMessaging {
         amqp.connect(this.MQServer)
             .then((conn) => {
 
-                console.log(` ******   Connected to MQ ${this.MQServer} **********`);
+                logger?.info (` ******   Connected to MQ ${this.MQServer} Queue ${queueName}**********`);
                 conn.on('error', (err) => {
-                    console.log("ERROR: %s", err);
+                    logger?.log("ERROR: %s", err);
                     conn.close();
                     setTimeout(function () {
                         //self.consume();
@@ -169,7 +178,7 @@ class MendelMessaging {
                 });
 
                 conn.on("closed", () => {
-                    console.log("Connection Closed");
+                    logger?.info ("Connection Closed");
                     setTimeout(function () {
                         //self.consume();
                     }, 50000);
@@ -249,16 +258,16 @@ class MendelMessaging {
         amqp.connect(this.MQServer)
             .then((conn) => {
 
-                logger.info(` ******   Connected to MQ ${this.MQServer} **********`);
+                logger.info(` ******   Connected to MQ ${this.MQServer}  Queue ${queueName} **********`);
                 conn.on('error', (err) => {
-                    console.log("ERROR: %s", err);
+                    logger?.log("ERROR: %s", err);
                     conn.close();
                     /*setTimeout(function () {
                         //self.consume();
                     }, 50000);*/
                 });
                 conn.on("closed", () => {
-                    console.log("Connection Closed");
+                    logger?.info ("Connection Closed");
                     /*setTimeout(function () {
                         //self.consume();
                     }, 50000);*/
